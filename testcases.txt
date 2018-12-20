@@ -1,0 +1,506 @@
+Testcase of MiniProject
+
+imagine that I have a program "main" under the same directory, which can just print out each argument (like argv).
+test for exit
+
+all the command I run is valgrind clean. You can run valgrind --leak-check=full ./test to start the test below.
+
+1.    run ./myShell,
+      You will see that it will prompt command line. The prompt should show the current directory before the $ sign.
+      For example, myShell:/home/yl543/ece551/mp_miniproject $
+      That's correct because this indicates the current working directory.
+
+2.    run ./myShell, then hit ENTER multiple times.
+      You will see that it will prompt a new command line.
+      That's correct because ENTER without doing anything will just start a new line. Just as normal command shell behaves.
+
+3.    run ./myShell, then enter one “space” or multiple "spaces".
+      You will see that it will prompt a new command line.
+      That's correct because space simply means no input, therefore will start a new command line.
+
+
+4.    run ./myShell then enter "exit".
+      You will see that myShell exit correctly, printing out nothing.
+      This is correct because "exit" will exit the program as README described.
+
+5.    run ./myShell $ "exit aaaa".
+      You will see that myShell will exit correctly, printing out nothing.
+      This is correct because "exit" will exit the program as README described. And it will ignore any other arguments.
+
+6.    run ./myShell, then hit Ctrl + D.
+      You will see that myShell exit correctly, printing out nothing.
+      This is correct because "exit" will exit the program as README described.
+
+
+check for exit code
+
+7.    run ./myShell $./main
+      You will see:
+      argc == >  1
+      argv[0] ==>./main
+      Program exited with status 0
+      This is correct, because this program can exit correctly with the exit status 0.
+
+8.    run ./myShell $ "cat asaa"
+      You will see:
+      /bin/cat: asaa: No such file or directory
+      Program exited with status 1
+      This is correct, the exit status 1 means the operation was not successful.
+
+9.    run ./myShell $ "ls asdad"
+      You will see:
+      /bin/ls: cannot access 'asdd': No such file or directory
+      Program exited with status 2
+      This is correct, the exit status 2 means cannot access command-line argument
+
+10.   run ./myShell $ "abc"
+      You will see: Command abc not found, then myShell will start a new command line.
+      This is correct because there is no command called abc. Therefore, it will print out command not found.
+
+11.   run ./myShell $ "./myShell" then run ./myShell $ "./myShell" then run kill 119264(pid of current process)
+      You will see : "Program was killed by signal 15"
+      This is correct because we run myShell within myShell. Then we use "ps" command to get the pid of current child process then use kill command to terminate it.
+
+
+
+
+test for step 2
+12.   run ./myShell $ "/bin/ls"
+      You will see all the files in the current directory.
+      This is correct because given the absolute path, ls command will behave as normal.
+
+13.   run ./myShell $ "/bin/ssss"
+      You will see "Invalid command."
+      This is correct because given the absolute path, there is no command called ssss.
+
+14.   run ./myShell $ "ls"s
+      You will see all the files in the current directory.
+      This is correct because given the relative path, ls command will find its absolute path then behave as /bin/ls.
+
+15.   run ./myShell $ "ls          "
+      You will see all the files in the current directory.
+      This is correct because my command shell will ignore all the tailing spaces after the command.
+
+16.   run ./myShell $ "            ls"
+      You will see all the files in the current directory.
+      This is correct because my command shell will ignore all the leading spaces after the command.
+
+17.   run ./myShell ".//"
+      You will see:
+      .// is directory.
+      Invalid command.
+      This is correct because ./ means current directory, and will ignore the slash after " ./ " .
+
+18.   run ./myShell "////"
+      You will see it print out :
+      //// is directory.
+      Invalid command.
+      This is correct because //// means the upper 4 level directory of current directory.
+
+19.   run ./myShell ".."
+      You will see it print out :
+      .. is directory.
+      Invalid command.
+      This is correct because .. means the relative path of the upper directory of current directory.
+
+20.   run ./myShell "."
+      You will see it print out :
+      . is directory.
+      Invalid command.
+      This is correct because . means the current path of the upper directory of current directory.
+
+21.   run ./myShell "..."
+      You will see it print out :
+      Command ... not found
+      Invalid command.
+      This is correct because ... is not a path but file. Therefore, myShell will search for it and found out
+      it't not a valid executable file.
+
+22.   run ./myShell "./main a b c"
+      You will see:
+      argc == >  4
+      argv[0] ==>./main
+      argv[1] ==>a
+      argv[2] ==>b
+      argv[3] ==>c
+      Program exited with status 0
+      This is correct, because this command line has 4 arguments and each of them is seperated by space.
+
+23.   run ./myShell "./main a\ b c"
+      You will see:
+      argc == >  3
+      argv[0] ==>./main
+      argv[1] ==>a b
+      argv[2] ==>c
+      Program exited with status 0
+      This is correct, because this command line has 3 arguments. a\ b is treated as one argument,
+      since the space between them is escaped by  \ .
+
+24.   run ./myShell "./main a\  b\ c"
+      You will see:
+      argc == >  3
+      argv[0] ==>./main
+      argv[1] ==>a b
+      argv[2] ==>c
+      Program exited with status 0
+      This is correct, because this command line has 3 arguments. a\ b is treated as one argument,
+      since the space between them is escaped by  \ .
+
+25.   run ./myShell "./main a\  b\ c d\e"
+      You will see:
+      argc == >  4
+      argv[0] ==>./main
+      argv[1] ==>a
+      argv[2] ==>b c
+      argv[3] ==>d\e
+      Program exited with status 0
+      This is correct because this command line has 4 arguments. \ after a will escape one space.
+      However, there is another space between a and b, so a b are treated as two arguments.
+
+26.   run ./myShell $ "./main     a    b   c"
+      You will see:
+      argc == >  4
+      argv[0] ==>./main
+      argv[1] ==>a
+      argv[2] ==>b
+      argv[3] ==>c
+      Program exited with status 0
+      This is correct because parser will ignore any space
+
+27.   run ./myShell $ "./main  a\ b c\ \ d"
+      You will see:
+      argc == >  3
+      argv[0] ==>./main
+      argv[1] ==>a b
+      argv[2] ==>c  d
+      Program exited with status 0
+      This is correct because white space after \ will be escaped.
+
+28.   run ./myShell $ "./main  ./main aaa b\"
+      You will see:
+      argc == >  3
+      argv[0] ==>./main
+      argv[1] ==>aaa
+      argv[2] ==>b\
+      Program exited with status 0
+      This is correct because white space after \ will be escaped and if nothing left after \,
+      \ becomes a character.
+
+29.  run ./myShell $ "./main \\ \  \"
+     argc == >  4
+     argv[0] ==>./main
+     argv[1] ==>\
+     argv[2] ==>
+     argv[3] ==>\
+     Program exited with status 0
+     This is correct because white space after \ will be escaped and if nothing left after \,
+     \ becomes a character.
+
+
+
+30.   run ./myShell $ ./main a\\b a\ b
+      You will see:
+      argc == >  3
+      argv[0] ==>./main
+      argv[1] ==>a\b
+      argv[2] ==>a b
+      Program exited with status 0
+      This is correct because \ after \ will be escaped.
+
+31.   run ./myShell $ ./main  a\  b c \ d
+      argc == >  5
+      argv[0] ==>./main
+      argv[1] ==>a
+      argv[2] ==>b
+      argv[3] ==>c
+      argv[4] ==> d
+      Program exited with status 0
+      This is correct because white space after \ will be escaped, as the non-escaped spaces
+      separate arguments.
+
+32.   run ./myShell $ ./main a\\\\\\\\\b
+      argc == >  2
+      argv[0] ==>./main
+      argv[1] ==>a\\\\\b
+      Program exited with status 0
+      This is correct because there are 9 escape character and each one will escape one after it.
+      Therefore leave us with a\\\\\b.
+
+33.   run ./myShell $ "mkdir new" and ./myShell $ "cd new".
+      You will see that it will prompt command line. The prompt should show the current directory before the $ sign.
+      For example, myShell:/home/yl543/ece551/mp_miniproject/new $
+      That's correct because this indicates the current working directory.
+
+34.   run ./myShell $ "cdnew"
+      you will see:
+      Command cdnew not found
+      Invalid command.
+      This is correct because if there is no space between command and path, myShell will consider it as a whole.
+
+35.   run ./myShell $ "cd aaa"
+      you will see:
+      error in cd: No such file or directory
+      This is correct because this directory doesn't exist. Therefore will report the error.
+
+36.   run ./myShell $ "cd new aaa"
+      you will see:
+      invalid argument of cd
+      This is correct because cd command only takes two arguments. Otherwise, it's error.
+
+37.   run ./myShell $ "pwd"
+      you will see:
+      /home/yl543/ece551/mp_miniproject
+      Program exited with status 0
+      This is correct because this prints out current working directory.
+
+38.   run ./myShell $ "cd ../mp_miniproject"
+      you will see nothing changes and the prompt is myShell:/home/yl543/ece551/mp_miniproject.
+      This is correct because this command go up one level and go to mo_miniproject directory.
+
+
+39.   run ./myShell $ "cd ../"
+      You will see that it will prompt the same command line.
+      For example, myShell:/home/yl543/ece551 $
+      That's correct because cd ../ will go back to the upper level.
+
+40.   run ./myShell $ "cd new" then ./myShell $ "../main a b c"
+      You will see:
+      oargc == >  4
+      argv[0] ==>../main
+      argv[1] ==>a
+      argv[2] ==>b
+      argv[3] ==>c
+      Program exited with status 0
+      That's correct because ../ will go back to the upper level and run the main funciton.
+
+41.   run ./myShell "cd"
+      you will see:
+      myShell:/ $ as new prompt
+      This is correct because if no argument is provided, cd will cd will change directory to the root directory.
+
+42.   run ./myShell "cd ./"
+      you will see:
+      myShell:/home/yl543/ece551/mp_miniproject $ as new prompt
+      This is correct because cd will cd ./ will stay at the same directory to the root directory.
+
+43.   run ./myShell "cd /""
+      you will see:
+      myShell:/ $ as new prompt
+      This is correct because / means the root directory, cd will change working directory to root directory.
+
+44.   run ./myShell $"$ "
+      You will see a blank line
+      This is correct because "$ " will be treated as "$" and search for a variable with no name, which doesn't exist.
+      Therefore, print blank line.
+
+44.   run ./myShell $"$$$$$"
+      You will see a blank line
+      This is correct because "$$$$$ " will be treated as "$" because redundant $ will be ignored.Then myShell search for a variable with no name, which doesn't exist.
+      Therefore, print blank line.
+
+45.   run ./myShell $"$abc"
+      You will see :
+      abc
+      This is because because it will search for the variable "abc", but couldn't fount it. So just simply print the variable name.
+
+
+46.   run./myShell $"$ECE551PATH"
+      You will see :
+      /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+      This is correct because even if we didn't manually add it, ECE551PATH will be stored in the environment.
+
+
+47.   run ./myShell $ "$ECE551PATH     "
+      You will see :
+      /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+      This is correct myShell ignore the tailing spaces and even if we didn't manually add it, ECE551PATH will be stored in the environment.
+
+48.   run./myShell $ "       $ECE551PATH"
+      You will see /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+      This is correct myShell ignore the leading spaces and even if we didn't manually add it, ECE551PATH will be stored in the environment.
+
+49.   run./myShell $ "$$$ECE551PATH$$$"
+      You will see :
+      /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+      This is correct myShell ignore the redundant dollar sign and even if we didn't manually add it, ECE551PATH will be stored in the environment.
+
+50.   run./myShell $ "echo $ECE551PATH"
+      You will see :
+      /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+      This is correct because echo command will print out the variable ECE551PATH, which has the value as above.
+
+51.   run ./myShell $ "set"
+      You will see
+      "set command: invalid syntax."
+      This is correct because set need three arguments. Otherwise it will be error.
+
+52.   run ./myShell "set "
+      You will see
+      "set command: invalid syntax."
+      This is correct because set need three arguments. Otherwise it will be error.
+
+53.   run ./myShell $ "set var"
+      You will see
+      "set command: invalid syntax."
+      This is correct because set need three arguments. Otherwise it will be error.
+
+54.   run ./myShell $ "set var 123"
+      You will see nothing but a new command line.
+      This is correct because this is a correct command and set var to 123, which prints out nothing.
+
+55.   run ./myShell $ "echo $var"
+      You will see:
+      123
+      Program exited with status 0
+      This is correct because this is a correct command and echo will print value of variable var
+      then it prints out its value and exit successfully.
+
+56.   run./myShell $ "set var This is var" then run ./myShell $ "echo $var"
+      You will see:
+      This is var
+      Program exited with status 0
+      This is correct because this is a correct command and set var to "This is var", which prints out nothing.
+      echo will print value of variable var
+      then it prints out its value and exit successfully.
+
+
+57.   run ./myShell $ "set v?r 123"
+      You will see :
+      sorry, var name has invalid character.
+      This is correct because var name contains invalid character, therefore will print error.
+
+58.   run ./myShell $ "set var adsa" then run ./myShell $ "ls $var"
+      You will see:
+      /bin/ls: cannot access 'adsa': No such file or directory
+      Program exited with status 2      
+      This is correct because this is a correct command and set var to "adsa", which is not a valid option.
+      That's why we see ls reports an error.
+
+59.   run ./myShell $ "set var -a" then run ./myShell $ "ls $var"
+      You will see:
+      .  ..  commandShell.txt  .honor  main  main.cpp  Makefile  myShell.  myShell.cpp myShell.h  new  numerics.txt	out  README  test  testemacs  tmp.txt
+      Program exited with status 0
+      This is correct because this is a correct command and set var to "-a", which prints out nothing.
+      Then we ls $var, which will replace $var with its value -a, then execute ls -a.
+
+
+60.   run ./myShell $ "var=111111" then ./myShell $ "echo $var"
+      you will see:
+      11111
+      Program exited with status 0
+      This is correct because myShell can use equal sign to assign the value to a variable.
+      And echo prints its value.
+
+61.   run ./myShell $ "var1=1 var2=2 var3=3" and run ./myShell $ "echo $var1"
+      then run ./myShell $ "echo $var2" then run ./myShell $ "echo $var3"
+      you will see 1 2 3 respectively.
+      This is correct because myShell can use equal sign to assign multiple values to variables.
+
+
+
+      Now assume var1 has value of 1,var2 has value of 2,var3 has value of 3
+
+62.   run ./myShell $ "$aaa"
+      you will see :
+      aaa
+      This is correct because if we use run $aaa, it will search the value of aaa from the map. If there is no
+      match, simply print that out.
+
+63.   run ./myShell $ "$var1"
+      you will see :
+      1
+      This is correct because if we use run $var1, it will search the value of var1 from the map and print it out.
+
+
+64.   run ./myShell $ "$var1$var2$var3"
+      you will see :
+      123
+      This is correct because if we use run $var1$var2$var3, it will search the value of var1,var2,and var3 from the map and print them out.
+
+
+65.   run ./myShell $ "$var1+$var2+$var3"
+      you will see :
+      1+2+3
+      This is correct because if we use run $var1+$var2+$var3, it will search the value of var1,var2,and var3 from the map and print them out.
+      And also concatenate the character that are not part of the variable name.
+
+66.   run ./myShell $ "$var1 $var2 $var3"
+      you will see :
+      1 2 3
+      This is correct because if we use run $var1+$var2+$var3, it will search the value of var1,var2,and var3 from the map and print them out.
+      And also concatenate the each part together.
+
+67.   run ./myShell $ "set tmp aaa", then run ./myShell "env"
+      We will not see tmp is in the env,
+      This is correct because we just set it up but didn't export it.
+
+68.   run ./myShell $ "$set abc c", then run ./myShell "$set abcd d", then run ./myShell $ "$abcde",
+      you will see :
+      de
+      This is correct because when I match the variable, I will match as long as possible.
+      Therefore, I will replace the abcd with d then concatenate with e, and answer is "de".
+
+69.   run ./myShell $ "inc"
+      You will see :
+      "inc command: invalid syntax."
+      This is correct because inc need two arguments. Otherwise it will be error.
+
+70    run ./myShell $ "inc a a"
+      You will see:
+      sorry, var name has invalid character.
+      This is correct because inc need two arguments. it consider a a to be one argument as "a a",
+      and space is not a valid character, so it will give the error.
+
+71.   run ./myShell $ "set var 1", then run ./myShell "inc var" then run ./myShell "$var"
+      You will see:
+      2
+      This is correct because we set the val to 1 and increase it by one, then print it out,
+      which gives us 2.
+
+72.   run ./myShell $ "set var abc", then run ./myShell "inc var" then run ./myShell "$var"
+      You will see:
+      1
+      This is correct because we set the val to abc and increase it. But it's not a digit value so we initialize it
+      to 0 then increment. Then print it out, which gives us 1.
+
+73.   run ./myShell $ "set var -1", then run ./myShell $ "inc var" then run ./myShell $ "$var"
+      You will see:
+      1
+      This is correct because we set the val to -1 and increase it. Here I don't consider -1 to be negative 1.
+      Because it can means "hyphen 1". so we initialize it to 0 then increment. Then print it out, which gives us 1.
+
+74.   run ./myShell $ "inc notexist" then run ./myShell $ "$notexist"
+      You will see:
+      1
+      This is correct because notexist is not in the map initially. We set the val to 0 and increase it by one, then print it out,
+      which gives us 2.
+
+75.   run ./myShell $ "set var 4294967295", then run ./myShell $ "inc var" then run ./myShell $ "$var"
+      You will see:
+      1
+      This is correct because we set the val to 4294967295 and increase it. This cause overflow.
+      so we initialize it to 0 then increment. Then print it out, which gives us 1.
+
+76.   run ./myShell $ "export"
+      You will see:
+      export command: invalid syntax.
+      This is correct because export need two arguments. Otherwise it's error.
+
+77.   run ./myShell $ "export "
+      You will see:
+      Var name doesn't exist.
+      This is correct because I use space to separate arguments.
+      Var name is empty, so var name doesn't exist in the map.
+
+78.   run ./myShell $ "set tmp aaa",then run ./myShell "export tmp"
+      we will see tmp is in the env.
+      This is correct because we just set it up and export it to environment variable.
+
+
+            
+
+
+other :
+79.   run ./myShell $clear
+      This will clear the window. And shows only Program exited with status 0
+      This is correct because clear can be correctly recognized and exit successfully.

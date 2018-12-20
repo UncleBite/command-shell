@@ -1,0 +1,18 @@
+total 556
+-rw-rw-r-- 1 yl543 yl543   7055 Nov 14 21:34 commandShell.txt
+-rwxrwxr-x 1 yl543 yl543  14616 Nov 29 03:42 main
+-rw-rw-r-- 1 yl543 yl543    743 Nov 29 03:41 main.cpp
+-rw-rw-r-- 1 yl543 yl543    107 Nov 27 15:17 Makefile
+-rw-rw-r-- 1 yl543 yl543      0 Dec  5 00:45 myShell.
+-rw-rw-r-- 1 yl543 yl543   2723 Dec  5 22:19 myShell.cpp
+-rw-rw-r-- 1 yl543 yl543  14827 Dec  5 22:39 myShell.h
+drwxrwxr-x 2 yl543 yl543      6 Dec  1 14:33 new
+-rw-rw-r-- 1 yl543 yl543   8881 Nov 14 21:34 numerics.txt
+-rw-rw---- 1 yl543 yl543      0 Dec  5 22:39 out
+-rw-rw-r-- 1 yl543 yl543   2475 Nov 14 21:34 README
+-rwxrwxr-x 1 yl543 yl543 428496 Dec  5 22:39 test
+-rw-rw-r-- 1 yl543 yl543  20000 Dec  5 22:25 #testcases.txt#
+-rw-rw-r-- 1 yl543 yl543  19993 Dec  5 22:05 testcases.txt
+-rw-rw-r-- 1 yl543 yl543  19971 Dec  5 22:05 testcases.txt~
+-rw-rw-r-- 1 yl543 yl543     10 Nov 25 20:02 testemacs
+-rw-rw-r-- 1 yl543 yl543    130 Dec  4 15:42 tmp.txt
